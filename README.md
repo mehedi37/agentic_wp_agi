@@ -1,8 +1,5 @@
 # Agentic WhatsApp Intelligence & Management Dashboard: Development Plan
 
-> Source brief: `AI_Analyst_Candidate_Project_Assignments.docx` (candidate: Md. Mehedi Hasan Maruf)
-> Plan date: 2026-09-14
-> Execution model: implemented by subagents, so tasks below are written to be self-contained, with explicit contracts, dependencies and acceptance criteria.
 
 ---
 
