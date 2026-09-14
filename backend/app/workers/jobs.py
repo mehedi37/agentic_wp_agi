@@ -1,5 +1,6 @@
 import uuid
 
+from app.agents.action import plan_action
 from app.agents.monitor import run_monitor
 from app.agents.pipeline_graph import run_pipeline_for_chat
 from app.db.session import SessionLocal
@@ -16,6 +17,8 @@ async def process_batch(ctx: dict, chat_id: str) -> dict:
             session, chat_id=parsed_chat_id, analyst_llm=llm, judge_llm=llm, embedder=embedder,
         )
         escalations = run_monitor(session, chat_id=parsed_chat_id)
+        for escalation in escalations:
+            await plan_action(session, escalation, llm)
         session.commit()
         return {"chat_id": chat_id, "status": "ok", "escalations_created": len(escalations)}
     except Exception:
