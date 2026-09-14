@@ -1,0 +1,17 @@
+[
+  {
+    "chat_key": "management_team",
+    "evidence_text": "Kamal, what's the status on the Shapla contract renewal? Legal was supposed to send it last week.",
+    "status_hint": "new",
+    "title": "Shapla Retail contract renewal status unclear",
+    "type": "issue"
+  },
+  {
+    "chat_key": "management_team",
+    "evidence_text": "Reversing that -- board wants Padma rollout back on the original Q1 timeline after all. Sorry for the churn.",
+    "related_item_title": "Padma warehouse rollout moved to Q2",
+    "status_hint": "update",
+    "title": "Padma warehouse rollout timeline reversed back to Q1",
+    "type": "decision"
+  }
+]

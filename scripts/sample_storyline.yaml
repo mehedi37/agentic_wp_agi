@@ -1,0 +1,466 @@
+org: "Nodi Logistics Ltd (fictional)"
+chats:
+  - key: management_team
+    name: "Management Team"
+    type: group
+    export_format: android
+    date_order: DMY
+    participants: ["Kamal (MD)", "Farah (Ops Head)", "Rafi (Warehouse Lead)"]
+    messages:
+      - day: 0
+        time: "09:15"
+        sender: "Kamal (MD)"
+        text: "Team, decision: we are moving the Padma warehouse rollout to Q2. Confirmed in yesterday's board call."
+      - day: 0
+        time: "09:17"
+        sender: "Farah (Ops Head)"
+        text: "Noted, will update the project plan."
+      - day: 0
+        time: "09:18"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Got it, will hold off on the Padma hiring then."
+      - day: 1
+        time: "10:00"
+        sender: "Kamal (MD)"
+        text: "Good morning all. Quick one: are we still on track for the Shapla Retail quarterly review?"
+      - day: 1
+        time: "10:05"
+        sender: "Farah (Ops Head)"
+        text: "Yes, Thursday 3pm as planned."
+      - day: 2
+        time: "11:00"
+        sender: "Kamal (MD)"
+        text: "Decision: approving the new forklift purchase for the warehouse, budget capped at 8 lakh taka."
+      - day: 2
+        time: "11:02"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Thank you, will get quotes from two vendors."
+      - day: 3
+        time: "09:30"
+        sender: "Farah (Ops Head)"
+        text: "Kamal, what's the status on the Shapla contract renewal? Legal was supposed to send it last week."
+        planted_scenario: unanswered_question
+        gold:
+          type: issue
+          title: "Shapla Retail contract renewal status unclear"
+          status_hint: new
+      - day: 3
+        time: "09:45"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Forklift quotes in, sending to Farah separately."
+      - day: 4
+        time: "14:00"
+        sender: "Kamal (MD)"
+        text: "Team lunch Friday, usual place, 1pm."
+      - day: 4
+        time: "14:02"
+        sender: "Farah (Ops Head)"
+        text: "In!"
+      - day: 5
+        time: "08:50"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Morning, warehouse audit went smoothly yesterday, no major issues."
+      - day: 6
+        time: "10:02"
+        sender: "Kamal (MD)"
+        text: "Reversing that -- board wants Padma rollout back on the original Q1 timeline after all. Sorry for the churn."
+        planted_scenario: reversed_decision
+        gold:
+          type: decision
+          title: "Padma warehouse rollout timeline reversed back to Q1"
+          status_hint: update
+          related_item_title: "Padma warehouse rollout moved to Q2"
+      - day: 6
+        time: "10:05"
+        sender: "Farah (Ops Head)"
+        text: "Understood, will re-plan for Q1."
+      - day: 6
+        time: "10:06"
+        sender: "Rafi (Warehouse Lead)"
+        text: "OK, resuming the Padma hiring then."
+      - day: 8
+        time: "09:00"
+        sender: "Kamal (MD)"
+        text: "Reminder: Friday is a public holiday, office closed."
+      - day: 9
+        time: "15:30"
+        sender: "Farah (Ops Head)"
+        text: "Client escalation from Shapla this morning, escalating separately in the client chat."
+      - day: 10
+        time: "09:10"
+        sender: "Kamal (MD)"
+        text: "Approved the extra headcount for Padma warehouse, two new pickers starting next month."
+
+  - key: project_padma_warehouse
+    name: "Project Padma Warehouse Rollout"
+    type: group
+    export_format: ios
+    date_order: DMY
+    participants: ["Rafi (Warehouse Lead)", "Nadia", "Shovon", "Farah (Ops Head)"]
+    messages:
+      - day: 0
+        time: "09:00"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Team, Padma warehouse racking installation starts this week."
+      - day: 0
+        time: "09:05"
+        sender: "Nadia"
+        text: "Noted, I'll coordinate with the vendor."
+      - day: 0
+        time: "09:10"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Nadia, can you confirm the racking delivery kal? Need it before the installers arrive."
+        planted_scenario: action_with_owner_deadline
+        gold:
+          type: action
+          title: "Confirm racking delivery"
+          owner_raw: "Nadia"
+          due_date_raw: "kal"
+          status_hint: new
+      - day: 0
+        time: "09:12"
+        sender: "Nadia"
+        text: "Thik ache, confirm korbo aj rate."
+      - day: 1
+        time: "10:00"
+        sender: "Shovon"
+        text: "Nadia, electrical wiring check porshu shesh hobe, tumi ki thakbe?"
+        planted_scenario: action_with_owner_deadline
+        gold:
+          type: action
+          title: "Be present for electrical wiring check"
+          owner_raw: "Nadia"
+          due_date_raw: "porshu"
+          status_hint: new
+      - day: 1
+        time: "10:03"
+        sender: "Nadia"
+        text: "Hae thakbo, no problem."
+      - day: 1
+        time: "10:30"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Shovon, submit the safety inspection report by Friday please."
+        planted_scenario: action_with_owner_deadline
+        gold:
+          type: action
+          title: "Submit safety inspection report"
+          owner_raw: "Shovon"
+          due_date_raw: "by Friday"
+          status_hint: new
+      - day: 1
+        time: "10:32"
+        sender: "Shovon"
+        text: "Ok will do."
+      - day: 2
+        time: "11:00"
+        sender: "Farah (Ops Head)"
+        text: "How's the racking install going?"
+      - day: 2
+        time: "11:05"
+        sender: "Rafi (Warehouse Lead)"
+        text: "On track, no delays so far."
+      - day: 2
+        time: "16:00"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Shovon, the vendor invoice needs your sign-off EOD, please don't miss it."
+        planted_scenario: action_with_owner_deadline
+        gold:
+          type: action
+          title: "Sign off vendor invoice"
+          owner_raw: "Shovon"
+          due_date_raw: "EOD"
+          status_hint: new
+      - day: 3
+        time: "09:00"
+        sender: "Shovon"
+        text: "Signed off, sent to accounts."
+      - day: 5
+        time: "09:15"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Shovon bhai, safety inspection report ekhono pathao nai, deadline chilo Friday."
+        planted_scenario: overdue_action
+        gold:
+          type: action
+          title: "Submit safety inspection report"
+          owner_raw: "Shovon"
+          status_hint: update
+      - day: 5
+        time: "09:20"
+        sender: "Shovon"
+        text: "Sorry, ajke e pathay dicchi."
+      - day: 6
+        time: "10:00"
+        sender: "Nadia"
+        text: "Racking installation complete, all sections done."
+      - day: 7
+        time: "14:00"
+        sender: "Shovon"
+        text: "Safety inspection report done bhai ✅ sent to Rafi and Farah both."
+        planted_scenario: completed_late_action
+        gold:
+          type: action
+          title: "Submit safety inspection report"
+          owner_raw: "Shovon"
+          status_hint: completed
+      - day: 7
+        time: "14:05"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Great, thanks Shovon."
+      - day: 8
+        time: "09:00"
+        sender: "Farah (Ops Head)"
+        text: "Good progress team, keep it up."
+      - day: 9
+        time: "11:00"
+        sender: "Nadia"
+        text: "Electrical wiring check porshu hoye gese, sob thik ache."
+      - day: 10
+        time: "09:30"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Next milestone: shelving labels, targeting next Friday."
+
+  - key: ops_incidents
+    name: "Ops & Incidents"
+    type: group
+    export_format: android
+    date_order: DMY
+    participants: ["Rahim", "Farah (Ops Head)", "Jamal", "Rafi (Warehouse Lead)"]
+    messages:
+      - day: 0
+        time: "08:00"
+        sender: "Rahim"
+        text: "গোডাউনে আবার লিকেজ হচ্ছে, গতকালও বলেছিলাম"
+        planted_scenario: recurring_issue_occurrence_1
+        gold:
+          type: issue
+          title: "Warehouse roof leakage recurring"
+          status_hint: new
+      - day: 0
+        time: "08:05"
+        sender: "Farah (Ops Head)"
+        text: "Noted, will check with maintenance."
+      - day: 1
+        time: "09:00"
+        sender: "Jamal"
+        text: "Morning stock count done, all matches."
+      - day: 2
+        time: "10:00"
+        sender: "Rahim"
+        text: "Ei je abar leak hocche section B te, ajke o dekhlam."
+        planted_scenario: recurring_issue_occurrence_2
+      - day: 2
+        time: "10:05"
+        sender: "Farah (Ops Head)"
+        text: "This is the second time, will escalate to facilities."
+      - day: 3
+        time: "09:00"
+        sender: "Rafi (Warehouse Lead)"
+        text: "গোডাউনের ছাদ দিয়ে আবার পানি পড়ছে, তিনবার হয়ে গেলো এই মাসে।"
+        planted_scenario: recurring_issue
+        gold:
+          type: issue
+          title: "Warehouse roof leakage recurring"
+          status_hint: update
+          related_item_title: "Warehouse roof leakage recurring"
+      - day: 3
+        time: "09:10"
+        sender: "Farah (Ops Head)"
+        text: "Escalating this today, it's a pattern now."
+      - day: 3
+        time: "14:00"
+        sender: "Rahim"
+        text: "There's also a risk with the fire extinguishers, several are past inspection date, nobody has been assigned to handle it."
+        planted_scenario: unowned_risk
+        gold:
+          type: risk
+          title: "Fire extinguishers past inspection date"
+          severity: high
+          status_hint: new
+      - day: 3
+        time: "14:05"
+        sender: "Jamal"
+        text: "Yeah I noticed that too, quite risky."
+      - day: 4
+        time: "08:30"
+        sender: "Rahim"
+        text: "কাল রাতে চুরির চেষ্টা হয়েছিল গেটে, সিকিউরিটি গার্ড ধরে ফেলেছে।"
+      - day: 4
+        time: "08:35"
+        sender: "Farah (Ops Head)"
+        text: "Good catch by security, will review CCTV footage."
+      - day: 5
+        time: "09:00"
+        sender: "Jamal"
+        text: "Everything quiet today, no incidents."
+      - day: 6
+        time: "10:00"
+        sender: "Rahim"
+        text: "Section A stock count off by 3 units, investigating."
+      - day: 6
+        time: "10:30"
+        sender: "Jamal"
+        text: "Found it, was a labeling error, corrected now."
+      - day: 7
+        time: "09:00"
+        sender: "Farah (Ops Head)"
+        text: "Good work resolving that quickly."
+      - day: 8
+        time: "11:00"
+        sender: "Rafi (Warehouse Lead)"
+        text: "Roof leak still not fixed, raising with the building owner directly now."
+      - day: 9
+        time: "09:00"
+        sender: "Rahim"
+        text: "Quiet day, all normal."
+      - day: 10
+        time: "10:00"
+        sender: "Jamal"
+        text: "Forklift battery replaced, back in service."
+
+  - key: client_shapla_retail
+    name: "Client -- Shapla Retail"
+    type: direct
+    export_format: android
+    date_order: DMY
+    participants: ["Farah (Ops Head)", "Shapla Contact - Imran"]
+    messages:
+      - day: 0
+        time: "10:00"
+        sender: "Shapla Contact - Imran"
+        text: "Hi Farah, good morning. Following up on our last order."
+      - day: 0
+        time: "10:05"
+        sender: "Farah (Ops Head)"
+        text: "Morning Imran, checking on it now."
+      - day: 1
+        time: "09:00"
+        sender: "Shapla Contact - Imran"
+        text: "Farah, this is the third delayed shipment this month. Very frustrated with the service lately."
+        planted_scenario: sentiment_dip_1
+        gold:
+          type: issue
+          title: "Shapla Retail repeated shipment delays"
+          status_hint: new
+      - day: 1
+        time: "09:05"
+        sender: "Farah (Ops Head)"
+        text: "I understand, apologies, looking into it right away."
+      - day: 1
+        time: "09:30"
+        sender: "Shapla Contact - Imran"
+        text: "Honestly this is affecting our own customer commitments, we need this fixed."
+        planted_scenario: sentiment_dip_2
+      - day: 1
+        time: "10:00"
+        sender: "Shapla Contact - Imran"
+        text: "Please escalate this internally, we can't keep operating like this."
+        planted_scenario: sentiment_dip_3
+        gold:
+          type: issue
+          title: "Shapla Retail service frustration escalation"
+          status_hint: update
+          related_item_title: "Shapla Retail repeated shipment delays"
+      - day: 1
+        time: "10:15"
+        sender: "Farah (Ops Head)"
+        text: "Completely understood, escalating to ops lead now, will have an update by end of day."
+      - day: 2
+        time: "09:00"
+        sender: "Farah (Ops Head)"
+        text: "Update: root cause was a warehouse dispatch delay, we've fixed the process and your next order ships today."
+      - day: 2
+        time: "09:30"
+        sender: "Shapla Contact - Imran"
+        text: "Thank you, appreciate the quick response."
+      - day: 3
+        time: "10:00"
+        sender: "Shapla Contact - Imran"
+        text: "Order received on time today, thanks."
+      - day: 4
+        time: "11:00"
+        sender: "Farah (Ops Head)"
+        text: "Glad to hear it, let us know if anything else comes up."
+      - day: 6
+        time: "09:00"
+        sender: "Shapla Contact - Imran"
+        text: "Quick question on next month's order volumes, can we discuss Thursday?"
+      - day: 6
+        time: "09:10"
+        sender: "Farah (Ops Head)"
+        text: "Sure, Thursday 3pm works."
+
+  - key: finance_approvals
+    name: "Finance Approvals"
+    type: group
+    export_format: ios
+    date_order: DMY
+    participants: ["Kamal (MD)", "Farah (Ops Head)", "Tanvir (Finance)"]
+    messages:
+      - day: 0
+        time: "09:00"
+        sender: "Tanvir (Finance)"
+        text: "Requesting approval for the Q1 marketing budget, 5 lakh taka."
+      - day: 0
+        time: "09:10"
+        sender: "Kamal (MD)"
+        text: "Approved, decision recorded."
+        planted_scenario: approval_decision_1
+        gold:
+          type: decision
+          title: "Q1 marketing budget approved"
+          status_hint: new
+      - day: 0
+        time: "09:12"
+        sender: "Tanvir (Finance)"
+        text: "Thanks, will process."
+      - day: 1
+        time: "10:00"
+        sender: "Tanvir (Finance)"
+        text: "Also requesting approval for the new accounting software subscription, 50k taka per year."
+      - day: 1
+        time: "10:15"
+        sender: "Kamal (MD)"
+        text: "Approved."
+        planted_scenario: approval_decision_2
+        gold:
+          type: decision
+          title: "Accounting software subscription approved"
+          status_hint: new
+      - day: 2
+        time: "09:00"
+        sender: "Farah (Ops Head)"
+        text: "Requesting approval to reimburse the warehouse forklift vendor deposit, 1 lakh taka."
+      - day: 2
+        time: "09:20"
+        sender: "Kamal (MD)"
+        text: "Approved, go ahead."
+      - day: 3
+        time: "11:00"
+        sender: "Tanvir (Finance)"
+        text: "Reminder: Q1 marketing budget spend is at 60% already, well ahead of plan."
+      - day: 4
+        time: "09:00"
+        sender: "Kamal (MD)"
+        text: "On reflection, reversing the marketing budget approval -- reducing to 3 lakh taka given the overspend pace. Please halt further commitments."
+        planted_scenario: reversed_decision_finance
+        gold:
+          type: decision
+          title: "Q1 marketing budget reduced to 3 lakh"
+          status_hint: update
+          related_item_title: "Q1 marketing budget approved"
+      - day: 4
+        time: "09:05"
+        sender: "Tanvir (Finance)"
+        text: "Understood, will inform the marketing team and pause new spend."
+      - day: 5
+        time: "10:00"
+        sender: "Farah (Ops Head)"
+        text: "Noted for planning purposes."
+      - day: 7
+        time: "09:00"
+        sender: "Tanvir (Finance)"
+        text: "Monthly close is done, no discrepancies found."
+      - day: 9
+        time: "10:00"
+        sender: "Kamal (MD)"
+        text: "Good work team, appreciate the diligence this month."

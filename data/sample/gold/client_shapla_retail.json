@@ -1,0 +1,17 @@
+[
+  {
+    "chat_key": "client_shapla_retail",
+    "evidence_text": "Farah, this is the third delayed shipment this month. Very frustrated with the service lately.",
+    "status_hint": "new",
+    "title": "Shapla Retail repeated shipment delays",
+    "type": "issue"
+  },
+  {
+    "chat_key": "client_shapla_retail",
+    "evidence_text": "Please escalate this internally, we can't keep operating like this.",
+    "related_item_title": "Shapla Retail repeated shipment delays",
+    "status_hint": "update",
+    "title": "Shapla Retail service frustration escalation",
+    "type": "issue"
+  }
+]

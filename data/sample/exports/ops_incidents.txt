@@ -1,0 +1,18 @@
+05/01/2026, 8:00 AM - Rahim: গোডাউনে আবার লিকেজ হচ্ছে, গতকালও বলেছিলাম
+05/01/2026, 8:05 AM - Farah (Ops Head): Noted, will check with maintenance.
+06/01/2026, 9:00 AM - Jamal: Morning stock count done, all matches.
+07/01/2026, 10:00 AM - Rahim: Ei je abar leak hocche section B te, ajke o dekhlam.
+07/01/2026, 10:05 AM - Farah (Ops Head): This is the second time, will escalate to facilities.
+08/01/2026, 9:00 AM - Rafi (Warehouse Lead): গোডাউনের ছাদ দিয়ে আবার পানি পড়ছে, তিনবার হয়ে গেলো এই মাসে।
+08/01/2026, 9:10 AM - Farah (Ops Head): Escalating this today, it's a pattern now.
+08/01/2026, 2:00 PM - Rahim: There's also a risk with the fire extinguishers, several are past inspection date, nobody has been assigned to handle it.
+08/01/2026, 2:05 PM - Jamal: Yeah I noticed that too, quite risky.
+09/01/2026, 8:30 AM - Rahim: কাল রাতে চুরির চেষ্টা হয়েছিল গেটে, সিকিউরিটি গার্ড ধরে ফেলেছে।
+09/01/2026, 8:35 AM - Farah (Ops Head): Good catch by security, will review CCTV footage.
+10/01/2026, 9:00 AM - Jamal: Everything quiet today, no incidents.
+11/01/2026, 10:00 AM - Rahim: Section A stock count off by 3 units, investigating.
+11/01/2026, 10:30 AM - Jamal: Found it, was a labeling error, corrected now.
+12/01/2026, 9:00 AM - Farah (Ops Head): Good work resolving that quickly.
+13/01/2026, 11:00 AM - Rafi (Warehouse Lead): Roof leak still not fixed, raising with the building owner directly now.
+14/01/2026, 9:00 AM - Rahim: Quiet day, all normal.
+15/01/2026, 10:00 AM - Jamal: Forklift battery replaced, back in service.

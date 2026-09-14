@@ -1,0 +1,24 @@
+[
+  {
+    "chat_key": "finance_approvals",
+    "evidence_text": "Approved, decision recorded.",
+    "status_hint": "new",
+    "title": "Q1 marketing budget approved",
+    "type": "decision"
+  },
+  {
+    "chat_key": "finance_approvals",
+    "evidence_text": "Approved.",
+    "status_hint": "new",
+    "title": "Accounting software subscription approved",
+    "type": "decision"
+  },
+  {
+    "chat_key": "finance_approvals",
+    "evidence_text": "On reflection, reversing the marketing budget approval -- reducing to 3 lakh taka given the overspend pace. Please halt further commitments.",
+    "related_item_title": "Q1 marketing budget approved",
+    "status_hint": "update",
+    "title": "Q1 marketing budget reduced to 3 lakh",
+    "type": "decision"
+  }
+]

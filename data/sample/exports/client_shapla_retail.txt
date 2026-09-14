@@ -1,0 +1,13 @@
+05/01/2026, 10:00 AM - Shapla Contact - Imran: Hi Farah, good morning. Following up on our last order.
+05/01/2026, 10:05 AM - Farah (Ops Head): Morning Imran, checking on it now.
+06/01/2026, 9:00 AM - Shapla Contact - Imran: Farah, this is the third delayed shipment this month. Very frustrated with the service lately.
+06/01/2026, 9:05 AM - Farah (Ops Head): I understand, apologies, looking into it right away.
+06/01/2026, 9:30 AM - Shapla Contact - Imran: Honestly this is affecting our own customer commitments, we need this fixed.
+06/01/2026, 10:00 AM - Shapla Contact - Imran: Please escalate this internally, we can't keep operating like this.
+06/01/2026, 10:15 AM - Farah (Ops Head): Completely understood, escalating to ops lead now, will have an update by end of day.
+07/01/2026, 9:00 AM - Farah (Ops Head): Update: root cause was a warehouse dispatch delay, we've fixed the process and your next order ships today.
+07/01/2026, 9:30 AM - Shapla Contact - Imran: Thank you, appreciate the quick response.
+08/01/2026, 10:00 AM - Shapla Contact - Imran: Order received on time today, thanks.
+09/01/2026, 11:00 AM - Farah (Ops Head): Glad to hear it, let us know if anything else comes up.
+11/01/2026, 9:00 AM - Shapla Contact - Imran: Quick question on next month's order volumes, can we discuss Thursday?
+11/01/2026, 9:10 AM - Farah (Ops Head): Sure, Thursday 3pm works.

@@ -1,0 +1,54 @@
+[
+  {
+    "chat_key": "project_padma_warehouse",
+    "due_date_raw": "kal",
+    "evidence_text": "Nadia, can you confirm the racking delivery kal? Need it before the installers arrive.",
+    "owner_raw": "Nadia",
+    "status_hint": "new",
+    "title": "Confirm racking delivery",
+    "type": "action"
+  },
+  {
+    "chat_key": "project_padma_warehouse",
+    "due_date_raw": "porshu",
+    "evidence_text": "Nadia, electrical wiring check porshu shesh hobe, tumi ki thakbe?",
+    "owner_raw": "Nadia",
+    "status_hint": "new",
+    "title": "Be present for electrical wiring check",
+    "type": "action"
+  },
+  {
+    "chat_key": "project_padma_warehouse",
+    "due_date_raw": "by Friday",
+    "evidence_text": "Shovon, submit the safety inspection report by Friday please.",
+    "owner_raw": "Shovon",
+    "status_hint": "new",
+    "title": "Submit safety inspection report",
+    "type": "action"
+  },
+  {
+    "chat_key": "project_padma_warehouse",
+    "due_date_raw": "EOD",
+    "evidence_text": "Shovon, the vendor invoice needs your sign-off EOD, please don't miss it.",
+    "owner_raw": "Shovon",
+    "status_hint": "new",
+    "title": "Sign off vendor invoice",
+    "type": "action"
+  },
+  {
+    "chat_key": "project_padma_warehouse",
+    "evidence_text": "Shovon bhai, safety inspection report ekhono pathao nai, deadline chilo Friday.",
+    "owner_raw": "Shovon",
+    "status_hint": "update",
+    "title": "Submit safety inspection report",
+    "type": "action"
+  },
+  {
+    "chat_key": "project_padma_warehouse",
+    "evidence_text": "Safety inspection report done bhai ✅ sent to Rafi and Farah both.",
+    "owner_raw": "Shovon",
+    "status_hint": "completed",
+    "title": "Submit safety inspection report",
+    "type": "action"
+  }
+]
