@@ -50,6 +50,19 @@ class Chat(Base):
     participants: Mapped[list["Participant"]] = relationship(back_populates="chat")
 
 
+class ChatState(Base):
+    __tablename__ = "chat_state"
+
+    chat_id: Mapped[uuid.UUID] = mapped_column(
+        ForeignKey("chats.id", ondelete="CASCADE"), primary_key=True
+    )
+    rolling_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    last_message_ts: Mapped[datetime | None] = mapped_column(TIMESTAMP(timezone=True), nullable=True)
+    updated_at: Mapped[datetime] = mapped_column(
+        TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
+
+
 class Participant(Base):
     __tablename__ = "participants"
 
@@ -91,9 +104,10 @@ class Message(Base):
     content_hash: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(EMBED_DIM), nullable=True)
     # Full-text search column (R5 hybrid search), populated automatically by
-    # Postgres -- see migration 0002_search_indexes_and_segment_types.
+    # Postgres. `simple` config (not `english`) so Bangla/Banglish tokens
+    # aren't mangled by English stemming -- see migration 0004.
     tsv: Mapped[str | None] = mapped_column(
-        TSVECTOR, Computed("to_tsvector('english', text)", persisted=True), nullable=True
+        TSVECTOR, Computed("to_tsvector('simple', text)", persisted=True), nullable=True
     )
 
 
