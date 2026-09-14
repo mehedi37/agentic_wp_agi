@@ -36,6 +36,9 @@ line-length = 100
 target-version = "py312"
 extend-exclude = ["alembic/versions"]
 
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
+
 [tool.mypy]
 python_version = "3.12"
 ignore_missing_imports = true
