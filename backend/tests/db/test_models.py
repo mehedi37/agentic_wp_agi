@@ -1,7 +1,8 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import create_engine
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.core.config import settings
@@ -41,7 +42,7 @@ def test_message_content_hash_unique() -> None:
         content_hash = f"hash-{uuid.uuid4()}"
         msg = Message(
             chat_id=chat.id,
-            ts=datetime.now(timezone.utc),
+            ts=datetime.now(UTC),
             text="hello",
             content_hash=content_hash,
         )
@@ -50,7 +51,7 @@ def test_message_content_hash_unique() -> None:
 
         dup = Message(
             chat_id=chat.id,
-            ts=datetime.now(timezone.utc),
+            ts=datetime.now(UTC),
             text="hello again",
             content_hash=content_hash,
         )
@@ -58,7 +59,7 @@ def test_message_content_hash_unique() -> None:
         try:
             session.commit()
             raised = False
-        except Exception:
+        except IntegrityError:
             session.rollback()
             raised = True
         assert raised, "duplicate content_hash must violate the unique constraint"
