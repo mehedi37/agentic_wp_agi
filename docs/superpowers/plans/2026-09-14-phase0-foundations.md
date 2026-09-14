@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Never mention "Anthropic", "Claude", "Co-Authored-By", or any AI-attribution text in commit messages, code comments, docs, or anywhere else in this repository. Commit messages are plain, describing only the change.
+- No AI-attribution or AI-collaborator credit anywhere in this repository: never add "Co-Authored-By", "Generated with", a session/tool link, or similar credit lines in commit messages, PR descriptions, code comments, or docs. Commit messages are plain, describing only the change. This does NOT bar legitimately naming "Anthropic"/"Claude" as a configured LLM vendor — API key env vars, SDK dependencies, and model identifiers (e.g. `claude-sonnet-5`) are expected and required throughout the LLM provider layer, its docs, and its config, since Claude is this project's default LLM provider.
 - Backend package manager is **uv**; do not use pip/poetry/conda directly. All backend commands run through `uv run ...`.
 - Python version floor: **3.12**. Node version floor: **20**.
 - All backend code is typed; `mypy` must pass with no errors on the `app/` package. All backend code is linted with `ruff` (default rule set) with no errors.
