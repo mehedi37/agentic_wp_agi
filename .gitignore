@@ -1,0 +1,16 @@
+.superpowers/
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+.next/
+dist/
+build/
+.env
+*.log
+.DS_Store
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+data/generated/
