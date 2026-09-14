@@ -1,4 +1,6 @@
 import json
+import time
+from collections.abc import Callable
 from typing import Any
 
 import httpx
@@ -17,9 +19,10 @@ from app.llm.base import (
 class OllamaProvider(LLMProvider):
     name = "ollama"
 
-    def __init__(self) -> None:
+    def __init__(self, on_call: Callable[[ChatResult], None] | None = None) -> None:
         self._base_url = settings.ollama_base_url
         self._default_model = settings.ollama_model
+        self._on_call = on_call
 
     async def _call(
         self, messages: list[dict[str, Any]], model: str, extra: dict[str, Any] | None = None
@@ -42,9 +45,20 @@ class OllamaProvider(LLMProvider):
         if system:
             full_messages.append({"role": "system", "content": system})
         full_messages.extend(dict(m) for m in messages)
+        start = time.perf_counter()
         data = await self._call(full_messages, model or self._default_model)
+        latency_ms = int((time.perf_counter() - start) * 1000)
         text = data["message"]["content"]
-        return ChatResult(text=text, tokens_in=0, tokens_out=0, model=model or self._default_model)
+        result = ChatResult(
+            text=text,
+            tokens_in=0,
+            tokens_out=0,
+            model=model or self._default_model,
+            latency_ms=latency_ms,
+        )
+        if self._on_call is not None:
+            self._on_call(result)
+        return result
 
     async def structured(
         self,

@@ -3,13 +3,14 @@ from datetime import datetime
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
+    Computed,
     ForeignKey,
     Index,
     Text,
     UniqueConstraint,
     func,
 )
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TIMESTAMP, UUID
+from sqlalchemy.dialects.postgresql import ARRAY, JSONB, TIMESTAMP, TSVECTOR, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.core.config import settings
@@ -89,6 +90,11 @@ class Message(Base):
     raw: Mapped[dict | None] = mapped_column(JSONB, nullable=True)
     content_hash: Mapped[str] = mapped_column(Text, nullable=False)
     embedding: Mapped[list[float] | None] = mapped_column(Vector(EMBED_DIM), nullable=True)
+    # Full-text search column (R5 hybrid search), populated automatically by
+    # Postgres -- see migration 0002_search_indexes_and_segment_types.
+    tsv: Mapped[str | None] = mapped_column(
+        TSVECTOR, Computed("to_tsvector('english', text)", persisted=True), nullable=True
+    )
 
 
 class Segment(Base):
@@ -98,7 +104,7 @@ class Segment(Base):
     chat_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("chats.id", ondelete="CASCADE"))
     start_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
     end_ts: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), nullable=False)
-    message_ids: Mapped[list[str]] = mapped_column(ARRAY(Text), default=list)
+    message_ids: Mapped[list[uuid.UUID]] = mapped_column(ARRAY(UUID(as_uuid=True)), default=list)
     topic: Mapped[str | None] = mapped_column(Text, nullable=True)
     category: Mapped[str | None] = mapped_column(Text, nullable=True)
     sentiment: Mapped[str | None] = mapped_column(Text, nullable=True)

@@ -1,3 +1,4 @@
+import hashlib
 import random
 from abc import ABC, abstractmethod
 
@@ -19,7 +20,12 @@ class FakeEmbeddingProvider(EmbeddingProvider):
     async def embed(self, texts: list[str]) -> list[list[float]]:
         vectors: list[list[float]] = []
         for text in texts:
-            rng = random.Random(hash(text) & 0xFFFFFFFF)
+            # Use a stable, process-independent hash instead of Python's
+            # salted str.__hash__() so the same text yields the same
+            # embedding across separate process runs (e.g. `make seed` in
+            # one process and `make test`/`make eval` in another).
+            seed = int.from_bytes(hashlib.sha256(text.encode()).digest()[:8], "big")
+            rng = random.Random(seed)
             vectors.append([rng.uniform(-1, 1) for _ in range(settings.embedding_dim)])
         return vectors
 

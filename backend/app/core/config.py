@@ -4,7 +4,17 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+    # Host-run commands (`make lint`/`make test`/etc.) `cd backend` first, so
+    # their CWD is `backend/` and they need the repo-root `.env` at `../.env`.
+    # A `backend/.env` is also checked as a fallback for anyone who creates
+    # one there directly. Inside the container, CWD is `/app` (== `backend/`
+    # in the image), so `../.env` would resolve to `/.env` at the container
+    # filesystem root, which is never mounted there and is simply not found
+    # -- harmless, because compose's `env_file: .env` directive already
+    # injects the repo-root `.env` as real process environment variables
+    # before pydantic-settings ever reads a file, so the file-based lookup
+    # here is host-only convenience and never needed in the container.
+    model_config = SettingsConfigDict(env_file=("../.env", ".env"), extra="ignore")
 
     database_url: str = "postgresql+psycopg://app:app@localhost:5432/agentic_wp"
     redis_url: str = "redis://localhost:6379/0"
@@ -33,6 +43,8 @@ class Settings(BaseSettings):
     whatsapp_access_token: str = ""
 
     app_timezone: str = "Asia/Dhaka"
+
+    cors_allowed_origins: list[str] = ["http://localhost:3000"]
 
 
 @lru_cache

@@ -1,3 +1,5 @@
+import time
+from collections.abc import Callable
 from typing import cast
 
 from anthropic import AsyncAnthropic
@@ -18,9 +20,10 @@ from app.llm.base import (
 class AnthropicProvider(LLMProvider):
     name = "anthropic"
 
-    def __init__(self) -> None:
+    def __init__(self, on_call: Callable[[ChatResult], None] | None = None) -> None:
         self._client = AsyncAnthropic(api_key=settings.anthropic_api_key)
         self._default_model = settings.anthropic_model
+        self._on_call = on_call
 
     async def chat(
         self,
@@ -35,6 +38,7 @@ class AnthropicProvider(LLMProvider):
         # (adaptive reasoning replaced manual temperature control), so it is
         # accepted here for interface compatibility with LLMProvider but not
         # forwarded to the API call.
+        start = time.perf_counter()
         response = await self._client.messages.create(
             model=model or self._default_model,
             max_tokens=4096,
@@ -44,13 +48,18 @@ class AnthropicProvider(LLMProvider):
                 [{"role": m["role"], "content": m["content"]} for m in messages],
             ),
         )
+        latency_ms = int((time.perf_counter() - start) * 1000)
         text = "".join(block.text for block in response.content if block.type == "text")
-        return ChatResult(
+        result = ChatResult(
             text=text,
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,
             model=response.model,
+            latency_ms=latency_ms,
         )
+        if self._on_call is not None:
+            self._on_call(result)
+        return result
 
     async def structured(
         self,
@@ -99,6 +108,7 @@ class AnthropicProvider(LLMProvider):
         tool_calls: list[ToolCallRecord] = []
         last_response = None
 
+        start = time.perf_counter()
         for _ in range(max_steps):
             last_response = await self._client.messages.create(
                 model=model or self._default_model,
@@ -123,12 +133,17 @@ class AnthropicProvider(LLMProvider):
                 )
             conversation.append({"role": "user", "content": tool_results})
 
+        latency_ms = int((time.perf_counter() - start) * 1000)
         assert last_response is not None
         text = "".join(b.text for b in last_response.content if b.type == "text")
-        return ChatResult(
+        result = ChatResult(
             text=text,
             tokens_in=last_response.usage.input_tokens,
             tokens_out=last_response.usage.output_tokens,
             model=last_response.model,
+            latency_ms=latency_ms,
             tool_calls=tool_calls,
         )
+        if self._on_call is not None:
+            self._on_call(result)
+        return result

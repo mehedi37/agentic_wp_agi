@@ -44,7 +44,12 @@ services:
     restart: unless-stopped
     env_file: .env
     environment:
-      DATABASE_URL: ${DATABASE_URL}
+      # Overrides the host-oriented DATABASE_URL from .env (which points at
+      # localhost, for host-run `make` targets): inside the compose network
+      # the database is reachable at the `postgres` service hostname, not
+      # localhost, so this is constructed from the POSTGRES_* vars instead
+      # of reusing .env's DATABASE_URL value directly.
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-agentic_wp}
     ports:
       - "8000:8000"
     depends_on:

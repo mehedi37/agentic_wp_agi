@@ -33,6 +33,7 @@ class ChatResult:
     tokens_in: int
     tokens_out: int
     model: str
+    latency_ms: int
     tool_calls: list[ToolCallRecord] = field(default_factory=list)
 
 
