@@ -37,6 +37,9 @@ async def run_validator(
 
     for idx, item in enumerate(items):
         issues: list[ValidationIssue] = []
+        if item.confidence < 0.6:
+            issues.append(ValidationIssue(item_index=idx, field="confidence",
+                                          message="low confidence requires human review"))
 
         if not item.evidence:
             issues.append(ValidationIssue(item_index=idx, field="evidence", message="no evidence cited"))

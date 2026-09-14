@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from fastapi import APIRouter, Depends
 from sqlalchemy import func, select
@@ -17,7 +17,7 @@ router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 def get_metrics(
     _user: CurrentUser = Depends(get_current_user), session: Session = Depends(get_session)
 ) -> DashboardMetrics:
-    now = datetime.now(tz=timezone.utc)
+    now = datetime.now(tz=UTC)
     week_ago = now - timedelta(days=7)
 
     open_actions = session.scalar(

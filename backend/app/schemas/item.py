@@ -52,5 +52,6 @@ class ItemOut(BaseModel):
     severity: str | None
     likelihood: str | None
     confidence: float | None
+    validation_status: str = "pending"
     created_at: datetime
     updated_at: datetime

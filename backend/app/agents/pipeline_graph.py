@@ -90,11 +90,13 @@ def _build_graph(
                 owner_raw=extracted.owner_raw, due_at=due_at, due_raw=extracted.due_date_raw,
                 priority=extracted.priority, severity=extracted.severity, likelihood=extracted.likelihood,
                 confidence=extracted.confidence, validation_status=status,
+                status="needs_review" if status == "needs_review" else "open",
             )
             session.add(item)
             session.flush()
             for ev in extracted.evidence:
-                session.add(ItemEvidence(item_id=item.id, message_id=ev.message_id, quote=ev.quote))
+                if ev.message_id in segment.message_ids:
+                    session.add(ItemEvidence(item_id=item.id, message_id=ev.message_id, quote=ev.quote))
             await embed_and_store_item(session, item, embedder)
 
         segment.analysis_status = "done" if status == "passed" else "needs_review"

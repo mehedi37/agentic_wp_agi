@@ -1,4 +1,6 @@
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from redis.exceptions import RedisError
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.api.deps import require_role
@@ -24,9 +26,13 @@ async def upload_export(
     _user: CurrentUser = Depends(_require_analyst_or_manager),
     session: Session = Depends(get_session),
 ) -> IngestResponse:
-    chat = Chat(source="export", name=chat_name, type="group", timezone="Asia/Dhaka")
-    session.add(chat)
-    session.flush()
+    if date_order not in ("DMY", "MDY") or not chat_name.strip():
+        raise HTTPException(status_code=422, detail="Provide a chat name and DMY or MDY date order")
+    chat = session.scalar(select(Chat).where(Chat.name == chat_name.strip(), Chat.source == "export"))
+    if chat is None:
+        chat = Chat(source="export", name=chat_name.strip(), type="group", timezone="Asia/Dhaka")
+        session.add(chat)
+        session.flush()
 
     file_bytes = await file.read()
     try:
@@ -36,13 +42,19 @@ async def upload_export(
             filename=file.filename or "upload",
             file_bytes=file_bytes,
             date_order=date_order,
-            enqueue=enqueue_process_batch,
         )
     except (UnrecognizedFormatError, NoChatFileError) as exc:
         session.rollback()
         raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)) from exc
 
     session.commit()
+    if stats.inserted:
+        try:
+            await enqueue_process_batch(chat.id)
+        except (RedisError, OSError, TimeoutError):
+            stats.job.status = "queue_failed"
+            stats.job.error = "Messages saved; processing queue unavailable. Retry processing."
+            session.commit()
     return IngestResponse(
         job_id=stats.job.id,
         chat_id=chat.id,

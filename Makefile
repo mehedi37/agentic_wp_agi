@@ -25,10 +25,10 @@ test:
 	cd backend && uv run pytest -q
 
 migrate:
-	cd backend && uv run alembic upgrade head
+	docker compose exec backend uv run alembic upgrade head
 
 seed: migrate
-	cd backend && uv run python -m scripts.seed
+	docker compose exec backend uv run python -m scripts.seed
 
 eval:
 	cd backend && uv run python -m scripts.run_eval

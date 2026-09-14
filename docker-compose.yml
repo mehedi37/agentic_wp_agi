@@ -50,6 +50,8 @@ services:
       # localhost, so this is constructed from the POSTGRES_* vars instead
       # of reusing .env's DATABASE_URL value directly.
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-agentic_wp}
+      REDIS_URL: redis://redis:6379/0
+      SAMPLE_DATA_DIR: /data/sample
     ports:
       - "8000:8000"
     depends_on:
@@ -59,7 +61,28 @@ services:
         condition: service_healthy
     volumes:
       - ./backend:/app
-    command: ["uv", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+      - ./data:/data:ro
+    command: ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000"]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  worker:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-app}@postgres:5432/${POSTGRES_DB:-agentic_wp}
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: ["uv", "run", "arq", "app.workers.settings.WorkerSettings"]
 
   frontend:
     build:

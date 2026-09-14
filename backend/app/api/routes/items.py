@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 from sqlalchemy import select
@@ -9,9 +9,11 @@ from app.api.deps import get_current_user
 from app.db.models import Item, ItemHistory
 from app.db.session import get_session
 from app.schemas.auth import CurrentUser
+from app.schemas.enums import ItemStatus
 from app.schemas.item import ItemOut
 
 router = APIRouter(prefix="/items", tags=["items"])
+_status_body = Body(..., embed=True)
 
 
 @router.get("", response_model=list[ItemOut])
@@ -34,7 +36,7 @@ def list_items(
     if owner_participant_id is not None:
         query = query.where(Item.owner_participant_id == owner_participant_id)
     if overdue:
-        now = datetime.now(tz=timezone.utc)
+        now = datetime.now(tz=UTC)
         query = query.where(
             Item.due_at.is_not(None), Item.due_at < now, Item.status.notin_(["done", "cancelled"])
         )
@@ -44,7 +46,7 @@ def list_items(
 @router.patch("/{item_id}/status", response_model=ItemOut)
 def update_item_status(
     item_id: uuid.UUID,
-    new_status: str = Body(..., embed=True),
+    new_status: ItemStatus = _status_body,
     current_user: CurrentUser = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> Item:

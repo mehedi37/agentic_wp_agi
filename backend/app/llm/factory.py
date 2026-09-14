@@ -2,8 +2,8 @@ from collections.abc import Callable
 
 from app.core.config import settings
 from app.llm.base import ChatResult, LLMProvider
+from app.llm.demo_provider import DemoProvider
 from app.llm.embeddings import EmbeddingProvider, FakeEmbeddingProvider, OllamaEmbeddingProvider
-from app.llm.fake_provider import FakeProvider
 
 
 def get_llm_provider(on_call: Callable[[ChatResult], None] | None = None) -> LLMProvider:
@@ -17,7 +17,7 @@ def get_llm_provider(on_call: Callable[[ChatResult], None] | None = None) -> LLM
     """
     provider = settings.llm_provider
     if provider == "fake":
-        return FakeProvider(on_call=on_call)
+        return DemoProvider(on_call=on_call)
     if provider == "anthropic":
         from app.llm.anthropic_provider import AnthropicProvider
 

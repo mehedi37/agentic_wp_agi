@@ -17,7 +17,7 @@ _require_manager = require_role("manager")
 
 
 def _get_pending_action(session: Session, action_id: uuid.UUID) -> ProposedAction:
-    action = session.get(ProposedAction, action_id)
+    action = session.scalar(select(ProposedAction).where(ProposedAction.id == action_id).with_for_update())
     if action is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Action not found")
     if action.status != "pending":

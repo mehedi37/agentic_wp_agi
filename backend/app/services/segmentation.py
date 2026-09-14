@@ -54,12 +54,11 @@ def persist_pending_segments(session: Session, chat_id: uuid.UUID) -> list[Segme
     """Segments every message in `chat_id` newer than the chat's latest
     existing segment (or every message if none exist yet), in `ts` order.
     Safe to call repeatedly per incoming batch."""
-    latest_end = session.scalar(
-        select(Segment.end_ts).where(Segment.chat_id == chat_id).order_by(Segment.end_ts.desc()).limit(1)
-    )
+    existing = list(session.scalars(select(Segment).where(Segment.chat_id == chat_id)))
+    covered_ids = {mid for segment in existing for mid in segment.message_ids}
     query = select(Message).where(Message.chat_id == chat_id, Message.is_system.is_(False))
-    if latest_end is not None:
-        query = query.where(Message.ts > latest_end)
+    if covered_ids:
+        query = query.where(Message.id.notin_(covered_ids))
     pending = list(session.scalars(query.order_by(Message.ts)))
 
     drafts = build_segments(pending, gap_minutes=45, max_messages=60)
@@ -75,4 +74,4 @@ def persist_pending_segments(session: Session, chat_id: uuid.UUID) -> list[Segme
     ]
     session.add_all(segments)
     session.flush()
-    return segments
+    return [s for s in existing if s.analysis_status == "pending"] + segments
