@@ -3,10 +3,22 @@ from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 
+from app.agents.checkpoints import setup_checkpoints
 from app.core.config import settings
 from app.db.base import Base
 from app.db.models import Chat
 from app.main import app
+
+
+@pytest.fixture(scope="session", autouse=True)
+def checkpoint_schema():
+    setup_checkpoints()
+
+
+@pytest.fixture(autouse=True)
+def simulated_outbound(monkeypatch):
+    monkeypatch.setattr(settings, "email_mode", "simulated")
+    monkeypatch.setattr(settings, "whatsapp_mode", "simulated")
 
 
 @pytest.fixture()
@@ -18,10 +30,12 @@ def client() -> TestClient:
 def db_session():
     engine = create_engine(settings.database_url)
     Base.metadata.create_all(engine)
-    session = Session(engine)
-    yield session
-    session.rollback()
-    session.close()
+    with engine.connect() as connection:
+        transaction = connection.begin()
+        with Session(bind=connection, join_transaction_mode="create_savepoint") as session:
+            yield session
+        transaction.rollback()
+    engine.dispose()
 
 
 @pytest.fixture()

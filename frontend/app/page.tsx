@@ -10,6 +10,7 @@ import {
   Run,
   User,
 } from "@/lib/api";
+import Settings from "@/components/settings";
 import Assistant from "@/components/assistant";
 const pages = [
   "Overview",
@@ -24,6 +25,7 @@ const pages = [
   "AI assistant",
   "Ingestion",
   "Agent activity",
+  "Settings",
 ];
 const date = (v?: string | null) => (v ? new Date(v).toLocaleString() : "—");
 export default function HomePage() {
@@ -185,7 +187,7 @@ export default function HomePage() {
         </div>
         <p className="eyebrow">MANAGEMENT</p>
         <nav aria-label="Main navigation">
-          {pages.map((name, i) => (
+          {pages.filter(name => name !== "Settings" || user.role === "manager").map((name, i) => (
             <button
               key={name}
               className={page === name ? "active" : ""}
@@ -570,6 +572,7 @@ export default function HomePage() {
           </section>
         )}
         {page === "AI assistant" && <Assistant inspect={setEvidence} />}
+        {page === "Settings" && user.role === "manager" && <Settings />}
         <footer>WhatsApp Intelligence · Local management workspace</footer>
       </main>
       {evidence !== null && (

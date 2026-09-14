@@ -17,6 +17,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db.models import Item, Segment
+from app.services.rules import rule_config
 
 _RECURRING_WINDOW_DAYS = 7
 _RECURRING_MIN_COUNT = 3
@@ -64,6 +65,7 @@ def detect_unowned_high_risk(session: Session, *, chat_id: uuid.UUID | None = No
     query = select(Item).where(
         Item.type == "risk",
         Item.severity == "high",
+        Item.status.notin_(["done", "cancelled"]),
         Item.owner_participant_id.is_(None),
         (Item.owner_raw.is_(None)) | (Item.owner_raw == ""),
     )
@@ -83,6 +85,8 @@ def detect_unowned_high_risk(session: Session, *, chat_id: uuid.UUID | None = No
 
 
 def detect_recurring_issue(session: Session, *, chat_id: uuid.UUID | None = None) -> list[EscalationCandidate]:
+    _, params = rule_config(session, "recurring_issue")
+    window_days, min_count = params["window_days"], params["min_count"]
     query = select(Item, Segment.end_ts).join(Segment, Item.segment_id == Segment.id).where(Item.type == "issue")
     if chat_id is not None:
         query = query.where(Item.chat_id == chat_id)
@@ -95,11 +99,11 @@ def detect_recurring_issue(session: Session, *, chat_id: uuid.UUID | None = None
             (other_item, other_ts)
             for other_item, other_ts in rows
             if other_item.chat_id == item.chat_id
-            and abs(other_ts - ts) <= timedelta(days=_RECURRING_WINDOW_DAYS)
+            and abs(other_ts - ts) <= timedelta(days=window_days)
             and difflib.SequenceMatcher(None, other_item.title.lower(), item.title.lower()).ratio()
             >= _RECURRING_TITLE_SIMILARITY
         ]
-        if len(cluster) < _RECURRING_MIN_COUNT:
+        if len(cluster) < min_count:
             continue
         key = frozenset(c[0].id for c in cluster)
         if key in seen_clusters:
@@ -111,7 +115,7 @@ def detect_recurring_issue(session: Session, *, chat_id: uuid.UUID | None = None
                 rule="recurring_issue",
                 severity="medium",
                 rationale=f'Issue "{latest_item.title}" raised {len(cluster)} times within '
-                f"{_RECURRING_WINDOW_DAYS} days.",
+                f"{window_days} days.",
                 item_id=latest_item.id,
                 chat_id=latest_item.chat_id,
             )
@@ -120,6 +124,7 @@ def detect_recurring_issue(session: Session, *, chat_id: uuid.UUID | None = None
 
 
 def detect_sentiment_dip(session: Session, *, chat_id: uuid.UUID | None = None) -> list[EscalationCandidate]:
+    streak = rule_config(session, "sentiment_dip")[1]["streak"]
     query = select(Segment).order_by(Segment.chat_id, Segment.end_ts.desc())
     if chat_id is not None:
         query = query.where(Segment.chat_id == chat_id)
@@ -131,13 +136,13 @@ def detect_sentiment_dip(session: Session, *, chat_id: uuid.UUID | None = None) 
 
     candidates = []
     for cid, chat_segments in by_chat.items():
-        recent = chat_segments[:_SENTIMENT_DIP_STREAK]
-        if len(recent) == _SENTIMENT_DIP_STREAK and all(s.sentiment == "negative" for s in recent):
+        recent = chat_segments[:streak]
+        if len(recent) == streak and all(s.sentiment == "negative" for s in recent):
             candidates.append(
                 EscalationCandidate(
                     rule="sentiment_dip",
                     severity="medium",
-                    rationale=f"Last {_SENTIMENT_DIP_STREAK} segments in this chat were negative in a row.",
+                    rationale=f"Last {streak} segments in this chat were negative in a row.",
                     chat_id=cid,
                 )
             )

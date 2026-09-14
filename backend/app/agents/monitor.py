@@ -16,6 +16,7 @@ from app.services.escalation_rules import (
     detect_sentiment_dip,
     detect_unowned_high_risk,
 )
+from app.services.rules import rule_config
 
 _DETECTORS = [detect_overdue_actions, detect_unowned_high_risk, detect_recurring_issue, detect_sentiment_dip]
 
@@ -28,8 +29,9 @@ def run_monitor(session: Session, *, chat_id: uuid.UUID | None = None, run_id: s
     run_id = run_id or str(uuid.uuid4())
 
     candidates: list[EscalationCandidate] = []
-    for detector in _DETECTORS:
-        candidates.extend(detector(session, chat_id=chat_id))
+    for rule_key, detector in zip(("overdue_action", "unowned_high_risk", "recurring_issue", "sentiment_dip"), _DETECTORS):
+        if rule_config(session, rule_key)[0]:
+            candidates.extend(detector(session, chat_id=chat_id))
     log_agent_run(
         session, run_id=run_id, agent="monitor", node="detect", status="ok",
         output_summary=f"{len(candidates)} candidates from {len(_DETECTORS)} detectors",

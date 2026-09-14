@@ -35,12 +35,16 @@ class Settings(BaseSettings):
 
     smtp_host: str = "localhost"
     smtp_port: int = 1025
+    email_mode: str = "smtp"
+    email_from: str = "dashboard@demo.local"
+    digest_recipient: str = "manager@demo.local"
 
     whatsapp_mode: str = "simulated"
     whatsapp_verify_token: str = "dev-verify-token"
     whatsapp_app_secret: str = "dev-app-secret"
     whatsapp_phone_number_id: str = ""
     whatsapp_access_token: str = ""
+    whatsapp_api_version: str = "v23.0"
 
     app_timezone: str = "Asia/Dhaka"
 

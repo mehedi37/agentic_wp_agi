@@ -5,13 +5,14 @@ from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.agents.action import plan_action
+from app.agents.checkpoints import setup_checkpoints
+from app.agents.monitor import run_monitor
+from app.agents.pipeline_graph import run_pipeline_for_chat
 from app.core.security import hash_password
 from app.db.models import Chat, User
 from app.db.session import SessionLocal
-from app.agents.pipeline_graph import run_pipeline_for_chat
-from app.agents.monitor import run_monitor
-from app.agents.action import plan_action
-from app.llm.factory import get_llm_provider, get_embedding_provider
+from app.llm.factory import get_embedding_provider, get_llm_provider
 from app.services.ingestion import ingest_export
 
 DEMO_USERS = [
@@ -38,6 +39,7 @@ def seed_users(session: Session) -> None:
 
 
 async def seed_demo() -> None:
+    setup_checkpoints()
     with SessionLocal() as session:
         seed_users(session)
         samples = Path(os.environ.get("SAMPLE_DATA_DIR", str(Path(__file__).resolve().parents[2] / "data" / "sample")))

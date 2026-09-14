@@ -9,6 +9,7 @@ from app.db.models import Message, Segment
 from app.llm.base import LLMProvider
 from app.schemas.item import ExtractedItem
 from app.schemas.validation import ItemVerdict, ValidationIssue, ValidationReport
+from app.services.items import find_update_target
 
 _JUDGE_SYSTEM_PROMPT = (Path(__file__).parent / "prompts" / "validator_judge_system.md").read_text()
 _QUOTE_MATCH_THRESHOLD = 0.8
@@ -20,6 +21,8 @@ class _JudgeOutput(BaseModel):
 
 
 def _quote_grounded(quote: str, message_text: str) -> bool:
+    if not quote.strip():
+        return False
     if quote in message_text:
         return True
     return SequenceMatcher(None, quote, message_text).ratio() >= _QUOTE_MATCH_THRESHOLD
@@ -37,6 +40,9 @@ async def run_validator(
 
     for idx, item in enumerate(items):
         issues: list[ValidationIssue] = []
+        if item.related_item_id and find_update_target(session, segment, item) is None:
+            issues.append(ValidationIssue(item_index=idx, field="related_item_id",
+                message="related item must exist in the same chat and have the same type"))
         if item.confidence < 0.6:
             issues.append(ValidationIssue(item_index=idx, field="confidence",
                                           message="low confidence requires human review"))

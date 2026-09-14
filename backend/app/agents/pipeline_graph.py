@@ -10,7 +10,7 @@ from app.agents.agent_runs import log_agent_run
 from app.agents.analyst import run_analyst
 from app.agents.state import PipelineState
 from app.agents.validator import run_validator
-from app.db.models import Item, ItemEvidence, Message, Segment
+from app.db.models import Message, Segment
 from app.llm.base import LLMProvider
 from app.llm.embeddings import EmbeddingProvider
 from app.memory.long_term import (
@@ -20,6 +20,7 @@ from app.memory.long_term import (
 )
 from app.memory.short_term import update_rolling_summary
 from app.services.date_resolver import resolve_date
+from app.services.items import persist_item
 from app.services.participants import resolve_participant
 from app.services.segmentation import persist_pending_segments
 
@@ -83,20 +84,15 @@ def _build_graph(
             if due_at is None and extracted.due_date_raw:
                 due_at = resolve_date(extracted.due_date_raw, anchor_ts=segment.end_ts)
 
-            item = Item(
-                type=extracted.type, title=extracted.title, description=extracted.description,
-                chat_id=segment.chat_id, segment_id=segment.id,
-                owner_participant_id=owner_participant.id if owner_participant else None,
-                owner_raw=extracted.owner_raw, due_at=due_at, due_raw=extracted.due_date_raw,
-                priority=extracted.priority, severity=extracted.severity, likelihood=extracted.likelihood,
-                confidence=extracted.confidence, validation_status=status,
-                status="needs_review" if status == "needs_review" else "open",
-            )
-            session.add(item)
-            session.flush()
-            for ev in extracted.evidence:
-                if ev.message_id in segment.message_ids:
-                    session.add(ItemEvidence(item_id=item.id, message_id=ev.message_id, quote=ev.quote))
+            values = {
+                "type": extracted.type, "title": extracted.title, "description": extracted.description,
+                "chat_id": segment.chat_id, "segment_id": segment.id,
+                "owner_participant_id": owner_participant.id if owner_participant else None,
+                "owner_raw": extracted.owner_raw, "due_at": due_at, "due_raw": extracted.due_date_raw,
+                "priority": extracted.priority, "severity": extracted.severity, "likelihood": extracted.likelihood,
+                "confidence": extracted.confidence, "validation_status": status,
+            }
+            item = persist_item(session, segment, extracted, values, passed=status == "passed")
             await embed_and_store_item(session, item, embedder)
 
         segment.analysis_status = "done" if status == "passed" else "needs_review"

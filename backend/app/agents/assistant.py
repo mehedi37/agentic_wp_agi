@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.agents.agent_runs import log_agent_run
 from app.db.models import Item, ItemEvidence, Message, Summary
-from app.llm.base import LLMProvider, ToolSpec
+from app.llm.base import ChatMessage, LLMProvider, ToolSpec
 from app.llm.embeddings import EmbeddingProvider
 from app.memory.retrieval import hybrid_search
 
@@ -25,7 +25,7 @@ def valid_citations(answer: str, sources: dict[str, dict]) -> bool:
 
 
 async def answer_question(session: Session, question: str, llm: LLMProvider,
-                          embedder: EmbeddingProvider) -> dict:
+                          embedder: EmbeddingProvider, history: list[ChatMessage] | None = None) -> dict:
     sources: dict[str, dict] = {}
     run_id = str(uuid.uuid4())
 
@@ -78,7 +78,7 @@ async def answer_question(session: Session, question: str, llm: LLMProvider,
             f"{row['text']} [{mid}]" for mid, row in list(sources.items())[:8])
     else:
         response = await llm.tool_loop(
-            [{"role": "user", "content": f"Question: {question}\nRetrieved data: {initial}"}],
+            [*(history or []), {"role": "user", "content": f"Question: {question}\nRetrieved data: {initial}"}],
             tools=tools, tool_executor=execute, system=_SYSTEM, max_steps=6)
         answer = response.text
         if not valid_citations(answer, sources):

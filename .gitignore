@@ -14,3 +14,4 @@ build/
 .ruff_cache/
 *.egg-info/
 data/generated/
+AI_Analyst_Candidate_Project_Assignments.docx
