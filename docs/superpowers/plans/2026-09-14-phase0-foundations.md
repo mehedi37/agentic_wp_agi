@@ -102,7 +102,7 @@ Each backend module has one job: `core/` is config and security primitives, `db/
 
 ---
 
-## Task 0.1: Repo Scaffold, Docker Compose & Tooling
+## Task 1: Repo Scaffold, Docker Compose & Tooling
 
 **Files:**
 - Create: `docker-compose.yml`, `Makefile`, `.env.example`, `.dockerignore`
@@ -614,7 +614,7 @@ git commit -m "chore: scaffold docker compose stack, backend skeleton, frontend 
 
 ---
 
-## Task 0.2: Database Models & Alembic Migration
+## Task 2: Database Models & Alembic Migration
 
 **Files:**
 - Create: `backend/app/core/config.py`
@@ -1188,7 +1188,7 @@ git commit -m "feat: add settings, db session, orm models, initial alembic migra
 
 ---
 
-## Task 0.3: Shared Pydantic Contracts
+## Task 3: Shared Pydantic Contracts
 
 **Files:**
 - Create: `backend/app/schemas/__init__.py`, `backend/app/schemas/enums.py`, `backend/app/schemas/message.py`, `backend/app/schemas/item.py`, `backend/app/schemas/escalation.py`, `backend/app/schemas/action.py`, `backend/app/schemas/auth.py`
@@ -1463,7 +1463,7 @@ git commit -m "feat: add shared pydantic contracts for messages, items, escalati
 
 ---
 
-## Task 0.4: LLM & Embedding Provider Layer
+## Task 4: LLM & Embedding Provider Layer
 
 **Files:**
 - Create: `backend/app/llm/__init__.py`, `backend/app/llm/base.py`, `backend/app/llm/fake_provider.py`, `backend/app/llm/anthropic_provider.py`, `backend/app/llm/ollama_provider.py`, `backend/app/llm/embeddings.py`, `backend/app/llm/factory.py`
@@ -2060,7 +2060,7 @@ git commit -m "feat: add pluggable llm and embedding provider layer with fake/an
 
 ---
 
-## Task 0.5: Auth (JWT, RBAC) & Seeded Users
+## Task 5: Auth (JWT, RBAC) & Seeded Users
 
 **Files:**
 - Create: `backend/app/core/security.py`
