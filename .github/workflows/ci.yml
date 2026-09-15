@@ -72,3 +72,76 @@ jobs:
       - name: Build
         working-directory: frontend
         run: npm run build
+
+  e2e:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: agentic_wp
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U app -d agentic_wp"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://app:app@localhost:5432/agentic_wp
+      REDIS_URL: redis://localhost:6379/0
+      LLM_PROVIDER: fake
+      EMBEDDING_PROVIDER: fake
+      SAMPLE_DATA_DIR: ${{ github.workspace }}/data/sample
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api
+      E2E_BASE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install backend dependencies
+        working-directory: backend
+        run: uv sync --frozen
+      - name: Migrate
+        working-directory: backend
+        run: uv run alembic upgrade head
+      - name: Seed demo users and sample data
+        working-directory: backend
+        run: uv run python -m scripts.seed
+      - name: Start backend
+        working-directory: backend
+        run: nohup uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 > /tmp/backend.log 2>&1 &
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Install Playwright browser
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Start frontend
+        working-directory: frontend
+        run: nohup npm run start -- -p 3000 > /tmp/frontend.log 2>&1 &
+      - name: Wait for services
+        run: |
+          npx --yes wait-on@7 http://localhost:8000/api/health http://localhost:3000 --timeout 60000
+      - name: Run e2e smoke test
+        working-directory: frontend
+        run: npm run test:e2e
+      - name: Show server logs on failure
+        if: failure()
+        run: |
+          echo "--- backend ---"; cat /tmp/backend.log || true
+          echo "--- frontend ---"; cat /tmp/frontend.log || true

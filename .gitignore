@@ -13,6 +13,9 @@ build/
 .mypy_cache/
 .ruff_cache/
 *.tsbuildinfo
+test-results/
+playwright-report/
+blob-report/
 *.egg-info/
 data/generated/
 AI_Analyst_Candidate_Project_Assignments.docx
