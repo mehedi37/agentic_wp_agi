@@ -44,17 +44,32 @@ async def consolidate_memory(session: Session, embedder: EmbeddingProvider) -> d
     for (chat_id, week), days in weekly.items():
         await upsert("week", chat_id, week, week + timedelta(days=7), "\n\n".join(days))
     profiles = 0
+    # Group by display name so the same person mentioned across multiple
+    # chats gets one merged profile/workload instead of one per chat.
+    by_name: dict[str, list[Participant]] = defaultdict(list)
     for participant in session.scalars(select(Participant)):
-        entity = session.get(Entity, participant.entity_id) if participant.entity_id else None
+        by_name[participant.display_name].append(participant)
+    for name, group in by_name.items():
+        entity = next(
+            (session.get(Entity, p.entity_id) for p in group if p.entity_id and session.get(Entity, p.entity_id)),
+            None,
+        ) or session.scalar(select(Entity).where(Entity.kind == "person", Entity.name == name))
         if entity is None:
-            entity = Entity(kind="person", name=participant.display_name, aliases=[])
+            entity = Entity(kind="person", name=name, aliases=[])
             session.add(entity)
             session.flush()
+        for participant in group:
             participant.entity_id = entity.id
-        active = list(session.scalars(select(Item).where(Item.owner_participant_id == participant.id,
-            Item.status.notin_(["done", "cancelled"]))))
-        profile = {"chat_id": str(participant.chat_id), "participant_id": str(participant.id),
-            "active_items": [{"id": str(i.id), "title": i.title, "status": i.status} for i in active]}
+        participant_ids = [p.id for p in group]
+        active = list(session.scalars(select(Item).where(
+            Item.owner_participant_id.in_(participant_ids), Item.status.notin_(["done", "cancelled"])
+        )))
+        profile = {
+            "chat_ids": sorted({str(p.chat_id) for p in group}),
+            "active_items": [
+                {"id": str(i.id), "title": i.title, "status": i.status, "chat_id": str(i.chat_id)} for i in active
+            ],
+        }
         if entity.profile != profile:
             entity.profile = profile
             profiles += 1

@@ -12,10 +12,12 @@ from app.api.routes import (
     auth,
     chats,
     dashboard,
+    entities,
     escalations,
     health,
     ingest,
     items,
+    reports,
     search,
     webhook,
 )
@@ -49,5 +51,8 @@ app.include_router(activity.router, prefix="/api")
 app.include_router(assistant.router, prefix="/api")
 app.include_router(settings_routes.router, prefix="/api")
 app.include_router(webhook.router, prefix="/api")
-for router in (chats.router, dashboard.router, escalations.router, items.router, search.router):
+for router in (
+    chats.router, dashboard.router, entities.router, escalations.router,
+    items.router, reports.router, search.router,
+):
     app.include_router(router, prefix="/api")

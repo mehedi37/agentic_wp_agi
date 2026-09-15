@@ -3,6 +3,8 @@ import { FormEvent, useCallback, useEffect, useState } from "react";
 import {
   Action,
   Chat,
+  downloadWeeklyReport,
+  Entity,
   Escalation,
   Evidence,
   Item,
@@ -25,6 +27,7 @@ const pages = [
   "AI assistant",
   "Ingestion",
   "Agent activity",
+  "People",
   "Settings",
 ];
 const date = (v?: string | null) => (v ? new Date(v).toLocaleString() : "—");
@@ -44,6 +47,7 @@ export default function HomePage() {
   const [results, setResults] = useState<Evidence[]>([]),
     [evidence, setEvidence] = useState<Evidence[] | null>(null),
     [query, setQuery] = useState("");
+  const [entities, setEntities] = useState<Entity[]>([]);
   useEffect(() => {
     if (!sessionStorage.getItem("access_token")) {
       setReady(true);
@@ -98,6 +102,8 @@ export default function HomePage() {
         setRuns(await request<Run[]>("/agent-runs"));
       else if (["Ingestion", "Chat explorer"].includes(page))
         setChats(await request<Chat[]>("/chats"));
+      else if (page === "People")
+        setEntities(await request<Entity[]>("/entities?kind=person"));
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -254,7 +260,21 @@ export default function HomePage() {
             <section className="panel">
               <div className="section-title">
                 <h2>Needs your attention</h2>
-                <span className="pill">{escalations.length} open</span>
+                <div>
+                  <span className="pill">{escalations.length} open</span>
+                  <button
+                    className="secondary"
+                    disabled={busy}
+                    onClick={() =>
+                      void perform(async () => {
+                        await downloadWeeklyReport();
+                        setNotice("Weekly management brief downloaded.");
+                      })
+                    }
+                  >
+                    ↓ Weekly report (PDF)
+                  </button>
+                </div>
               </div>
               {escalations.length ? (
                 escalations.slice(0, 8).map((e) => (
@@ -568,6 +588,37 @@ export default function HomePage() {
             ))}
             {!runs.length && (
               <Empty text="Agent executions appear after processing a conversation." />
+            )}
+          </section>
+        )}
+        {page === "People" && (
+          <section className="panel">
+            <div className="section-title">
+              <h2>People</h2>
+              <span className="pill">{entities.length} profiles</span>
+            </div>
+            {entities.map((entity) => (
+              <article className="attention" key={entity.id}>
+                <span className="pill">{entity.workload} active</span>
+                <div>
+                  <h3>{entity.name}</h3>
+                  <p className="muted">
+                    In {(entity.profile?.chat_ids || []).length} chat
+                    {(entity.profile?.chat_ids || []).length === 1 ? "" : "s"}
+                  </p>
+                  {(entity.profile?.active_items || []).map((it) => (
+                    <p key={it.id}>
+                      <span className="pill">{it.status}</span> {it.title}
+                    </p>
+                  ))}
+                  {!(entity.profile?.active_items || []).length && (
+                    <p className="muted">No active items right now.</p>
+                  )}
+                </div>
+              </article>
+            ))}
+            {!entities.length && (
+              <Empty text="Profiles appear after the nightly memory consolidation job runs (or trigger it manually)." />
             )}
           </section>
         )}

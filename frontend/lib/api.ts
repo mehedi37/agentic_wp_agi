@@ -69,3 +69,30 @@ export interface Run {
   ts: string;
   output_summary: string;
 }
+export interface Entity {
+  id: string;
+  kind: string;
+  name: string;
+  aliases: string[];
+  profile: {
+    chat_ids?: string[];
+    active_items?: { id: string; title: string; status: string; chat_id: string }[];
+  } | null;
+  workload: number;
+}
+export async function downloadWeeklyReport(): Promise<void> {
+  const token = sessionStorage.getItem("access_token");
+  const response = await fetch(`${API}/reports/weekly.pdf`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!response.ok) throw new Error(`Request failed (${response.status})`);
+  const blob = await response.blob();
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "weekly-management-brief.pdf";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
