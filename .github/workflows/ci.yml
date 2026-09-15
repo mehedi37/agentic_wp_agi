@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main, implementation]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: app
+          POSTGRES_PASSWORD: app
+          POSTGRES_DB: agentic_wp
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U app -d agentic_wp"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+psycopg://app:app@localhost:5432/agentic_wp
+      REDIS_URL: redis://localhost:6379/0
+      LLM_PROVIDER: fake
+      EMBEDDING_PROVIDER: fake
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.x"
+      - name: Install dependencies
+        working-directory: backend
+        run: uv sync --frozen
+      - name: Lint (ruff)
+        working-directory: backend
+        run: uv run ruff check .
+      - name: Type check (mypy)
+        working-directory: backend
+        run: uv run mypy app
+      - name: Migrate
+        working-directory: backend
+        run: uv run alembic upgrade head
+      - name: Test
+        working-directory: backend
+        run: uv run pytest -q
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+      - name: Type check
+        working-directory: frontend
+        run: npx tsc --noEmit
+      - name: Build
+        working-directory: frontend
+        run: npm run build

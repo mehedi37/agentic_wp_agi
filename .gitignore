@@ -12,6 +12,7 @@ build/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+*.tsbuildinfo
 *.egg-info/
 data/generated/
 AI_Analyst_Candidate_Project_Assignments.docx
