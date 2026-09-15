@@ -28,9 +28,12 @@ Base path: `/api`. Interactive OpenAPI docs are served at `/docs` (Swagger UI) w
 | GET | `/messages/{message_id}` | any | single message, for citation drill-down |
 | GET | `/items` | any | filters: `item_type`, `item_status`, `chat_id`, `owner_participant_id`, `overdue` |
 | GET | `/items/{item_id}/evidence` | any | the cited messages behind one item |
-| PATCH | `/items/{item_id}/status` | any | body `{"new_status": ...}`; writes an `item_history` row (`actor="user"`) |
+| PATCH | `/items/{item_id}/status` | any | body `{"new_status": ...}`; writes an `item_history` row (`actor="user"`), and if moved out of `needs_review`, a `feedback` row the Analyst reads back (see `docs/agents.md`) |
 | GET | `/escalations` | any | filter: `escalation_status` |
 | GET | `/dashboard/metrics` | any | open/overdue actions, new risks (7d), decisions (7d), open escalations, pending approvals |
+| GET | `/entities` | any | filter: `kind` (`person`\|`project`\|`client`\|`topic`); each row's `workload` is its active-item count |
+| GET | `/entities/{entity_id}` | any | one profile (`profile.active_items`, `profile.chat_ids`) |
+| GET | `/reports/weekly.pdf` | any | downloadable management brief (KPIs, open escalations, overdue actions), rendered with reportlab |
 | GET | `/search` | any | `q`, `k`, optional `chat_id`; hybrid (vector + full-text) search with RRF |
 | GET | `/agent-runs` | any | Agent Activity feed |
 

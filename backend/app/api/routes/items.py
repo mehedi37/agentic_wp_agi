@@ -11,6 +11,7 @@ from app.db.session import get_session
 from app.schemas.auth import CurrentUser
 from app.schemas.enums import ItemStatus
 from app.schemas.item import ItemOut
+from app.services.feedback import record_item_correction
 
 router = APIRouter(prefix="/items", tags=["items"])
 _status_body = Body(..., embed=True)
@@ -62,5 +63,10 @@ def update_item_status(
             actor="user",
         )
     )
+    if old_status == "needs_review" and new_status != old_status:
+        record_item_correction(
+            session, item_id=item.id, chat_id=item.chat_id, item_type=item.type, title=item.title,
+            from_status=old_status, to_status=new_status, user_id=current_user.id,
+        )
     session.commit()
     return item

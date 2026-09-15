@@ -253,7 +253,7 @@ stateDiagram-v2
   - `send_whatsapp_message` (Cloud API; the `WHATSAPP_MODE=simulated|live` setting decides whether it just logs the request or really calls Graph API)
   - `update_item_status`
 - **Verify step:** checks the SMTP result or the Cloud API response / status webhook (`sent/delivered/failed`).
-- **Learning signal:** approve/reject decisions and edits are stored in procedural memory and injected as few-shot preferences into future plans (P2 enhancement; the data is captured in P0/P1).
+- **Learning signal:** approve/reject decisions and edits are stored in procedural memory and injected as few-shot preferences into future plans (`services/feedback.py`; implemented in P2, see `docs/agents.md` §3).
 
 ### 6.6 Assistant Agent (management assistant)
 - **ReAct tool loop** (Claude tool use), up to 8 tool steps, with these tools:

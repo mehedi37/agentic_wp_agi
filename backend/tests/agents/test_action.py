@@ -76,3 +76,21 @@ async def test_reject_action_marks_rejected_with_feedback(db_session, seed_chat)
 
     assert action.status == "rejected"
     assert action.edit == {"feedback": "not needed right now"}
+
+
+async def test_past_rejection_feedback_calibrates_the_next_draft(db_session, seed_chat):
+    marker = str(uuid.uuid4())
+    esc1 = _make_escalation(db_session, seed_chat, severity="high")
+    llm = FakeProvider(responses=["Urgent draft one.", "Urgent draft two."])
+    action1 = await plan_action(db_session, esc1, llm)
+    db_session.flush()
+
+    manager = _make_manager(db_session)
+    reject_action(db_session, action1, decided_by=manager.id, feedback=f"too alarming, {marker}")
+    db_session.flush()
+
+    esc2 = _make_escalation(db_session, seed_chat, severity="high")
+    await plan_action(db_session, esc2, llm)
+
+    second_draft_prompt = llm.calls[1]["messages"]
+    assert any(f"too alarming, {marker}" in m["content"] for m in second_draft_prompt)
