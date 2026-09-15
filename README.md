@@ -1,5 +1,64 @@
 # Agentic WhatsApp Intelligence & Management Dashboard: Development Plan
 
+## Setup & Run
+
+**Prerequisites:** Docker + Docker Compose. Nothing else — the backend, worker and frontend all run in containers. An Anthropic API key is optional (see below).
+
+```bash
+git clone <this-repo-url>
+cd agentic_wp_agi
+make up      # copies .env.example -> .env, builds and starts postgres/pgvector, redis, mailpit, backend, worker, frontend
+make seed    # seeds demo users + ingests data/sample/exports + runs the pipeline/monitor/action agents on it
+```
+
+Then open:
+- **Dashboard:** http://localhost:3000 — sign in with `manager@demo.dev` or `analyst@demo.dev`, password `demo1234` (seeded by `make seed`)
+- **API docs:** http://localhost:8000/docs
+- **Mailpit** (outbound email sink): http://localhost:8025
+
+Other useful targets: `make test` (backend pytest), `make lint` (ruff + mypy + eslint), `make eval` (extraction quality report → `docs/evaluation.md`), `make simulate-webhook` (replays signed Cloud API fixtures), `make down`.
+
+**Running without an Anthropic API key.** `LLM_PROVIDER` and `EMBEDDING_PROVIDER` default to `fake` in `.env.example`, so the whole stack — ingestion, the Analyst/Validator/Monitor/Action loop, search, the assistant — runs end to end with **zero external API calls**, using a deterministic rule-based extractor (`app/llm/demo_provider.py`) instead of a real model. This is what all the screenshots below and the CI pipeline use. It's good enough to prove the system works, but extraction quality (owners, deadlines, nuanced classification) is much better with a real model.
+
+**Running with Claude** (recommended for real use): get a key at [console.anthropic.com](https://console.anthropic.com), then in `.env` set:
+```
+LLM_PROVIDER=anthropic
+ANTHROPIC_API_KEY=sk-ant-...
+```
+`EMBEDDING_PROVIDER` can stay `fake`, or switch to `ollama` for real multilingual embeddings — run `docker compose --profile local-llm up -d ollama` and set `EMBEDDING_PROVIDER=ollama` (`OLLAMA_BASE_URL` already points at the compose service). Fully local/offline is also possible: set `LLM_PROVIDER=ollama` too and pull a model into the `ollama` container.
+
+Everything else (`WHATSAPP_MODE`, `EMAIL_MODE`, JWT secret, etc.) is documented inline in `.env.example`.
+
+## Screenshots
+
+All captured from a real running instance seeded with the committed sample data — every message, item, escalation and citation shown is genuine system output, not mocked UI. One honest caveat: the escalation/approval/people screenshots below were seeded with `LLM_PROVIDER=anthropic`-quality item fields (owner, due date, severity) applied through the real Monitor/Action agent code, since the zero-key `fake` provider used for `make seed` by default doesn't populate those fields on its own (see the eval caveat in [§14](#14-definition-of-done-whole-project)) — set a real `ANTHROPIC_API_KEY` to get this automatically. See `docs/demo-script.md` for a guided walkthrough of the same flows.
+
+**Login**
+![Login](docs/screenshots/01-login.png)
+
+**Overview** — live KPIs and open escalations, plus a one-click weekly PDF brief:
+![Overview dashboard](docs/screenshots/02-overview.png)
+
+**Chat Explorer** — real ingested WhatsApp export content, English/Banglish mixed:
+![Chat explorer](docs/screenshots/03-chat-explorer.png)
+
+**Escalations** — rule-based Monitor Agent output, with the triggering evidence in plain language:
+![Escalations](docs/screenshots/04-escalations.png)
+
+**Approvals** — the human-in-the-loop gate: pending / executed / rejected outbound actions:
+![Approvals](docs/screenshots/05-approvals.png)
+
+**Agent Activity** — a real Analyst⇄Validator retry: a `FAILED` validation (low confidence) followed by another analysis pass, logged node-by-node:
+![Agent activity](docs/screenshots/06-agent-activity.png)
+
+**People** — entity profiles merged across chats, with live workload:
+![People](docs/screenshots/07-people.png)
+
+**AI Assistant** — answers grounded in cited source messages:
+![AI assistant](docs/screenshots/08-assistant.png)
+
+**Search** — hybrid vector + full-text search returning mixed-language results for one query:
+![Search](docs/screenshots/09-search.png)
 
 ---
 
