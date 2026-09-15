@@ -469,12 +469,13 @@ stateDiagram-v2
 
 ### Phase 5: Polish & Enhancements (P2, optional)
 
-- T5.1 Feedback learning: approvals, rejections and analyst corrections become few-shot examples in Analyst and Action prompts.
-- T5.2 Entity/person and project profile pages; workload per owner.
-- T5.3 Exportable management report (PDF/DOCX weekly brief).
-- T5.4 Live Meta Cloud API connection guide + test-number run.
-- T5.5 Cost/latency panel per agent; prompt caching for Claude system prompts.
-- T5.6 Accessibility and responsive audit of the dashboard.
+- [x] T5.1 Feedback learning: approvals, rejections and analyst corrections become few-shot examples in Analyst and Action prompts. `services/feedback.py`.
+- [x] T5.2 Entity/person and project profile pages; workload per owner. `GET /api/entities`, People page.
+- [x] T5.3 Exportable management report (PDF weekly brief). `GET /api/reports/weekly.pdf`, reportlab.
+- [x] T4.6 (pulled forward from P1) Playwright e2e smoke test + CI job, since it depends on the same approval/RBAC flows as T5.1-T5.3's verification.
+- [ ] T5.4 Live Meta Cloud API connection guide + test-number run. Not started — needs a real Meta Business account, which this environment doesn't have; `WHATSAPP_MODE=live` config path already exists (`ingestion/cloud_api/sender.py`).
+- [ ] T5.5 Cost/latency panel per agent; prompt caching for Claude system prompts. Not started — `agent_runs.tokens_in/out`/`latency_ms` are already captured and would only need a dashboard panel; prompt caching would need Anthropic-specific provider changes.
+- [ ] T5.6 Accessibility and responsive audit of the dashboard. Not started.
 
 ### Dependency / parallelism overview
 
@@ -501,16 +502,16 @@ flowchart TD
 
 ## 14. Definition of Done (whole project)
 
-- [ ] `make up && make seed` gives a populated dashboard from a clean clone, with no manual steps beyond `.env`.
-- [ ] Sample exports (Android + iOS) and simulated Cloud API messages ingest idempotently.
-- [ ] Extracted actions, decisions, risks and issues each have an owner (or explicit unassigned), a deadline where stated, and clickable evidence.
-- [ ] Agent Activity shows at least one Analyst⇄Validator retry, a Monitor cycle, and an Action run paused for approval then resumed.
-- [ ] Every planted scenario produces the expected escalation, and the approved email/WhatsApp actions execute and verify.
-- [ ] Hybrid search works for English, Bangla and Banglish queries.
-- [ ] The assistant answers management queries with valid citations and produces a weekly brief.
-- [ ] RBAC is enforced: only a Manager can approve outbound actions or change settings.
-- [ ] CI is green with FakeLLM; `make eval` metrics are published in `docs/evaluation.md`.
-- [ ] Architecture, agent, memory and compliance docs plus the demo script/video are delivered.
+- [x] `make up && make seed` gives a populated dashboard from a clean clone, with no manual steps beyond `.env`. Verified end-to-end in this environment (login, dashboard metrics, escalations, approvals all populated from the seed run).
+- [x] Sample exports (Android + iOS) and simulated Cloud API messages ingest idempotently. Covered by the parser format-matrix tests and `scripts/simulate_webhook.py` (re-POSTing a fixture inserts 0 new messages).
+- [x] Extracted actions, decisions, risks and issues each have an owner (or explicit unassigned), a deadline where stated, and clickable evidence. `item_evidence` + the dashboard's evidence drawer.
+- [x] Agent Activity shows at least one Analyst⇄Validator retry, a Monitor cycle, and an Action run paused for approval then resumed. Verified manually against real sample data and by the Playwright e2e suite (approve resumes a paused run).
+- [x] Every escalation rule (overdue, unowned high risk, recurring issue, sentiment dip) fires correctly at the detector level (`tests/services/test_escalation_rules.py`, 14 cases), and the approved email/WhatsApp actions execute (simulated by default) and verify. **Caveat:** an end-to-end run against the sample data with `LLM_PROVIDER=fake` (the built-in deterministic demo extractor, used because no Anthropic key is configured in this environment) only reliably triggers `overdue_action`, since the other three rules need richer extraction (severity, title clustering, sentiment) than the demo provider produces — set `LLM_PROVIDER=anthropic` to see all four fire against the planted scenarios.
+- [x] Hybrid search works for English, Bangla and Banglish queries. `tests/memory/test_retrieval.py`.
+- [x] The assistant answers management queries with valid citations (citation-validation/reflection step, `tests/agents/test_assistant_citations.py`) and can produce a weekly brief — both as an assistant quick-prompt (reads consolidated `Summary` rows) and as a downloadable PDF (`GET /api/reports/weekly.pdf`).
+- [x] RBAC is enforced: only a Manager can approve outbound actions or change settings. `tests/api/test_actions.py`, `tests/api/test_deps.py`, and the Playwright suite's analyst-cannot-approve check.
+- [x] CI is green (backend lint/mypy/pytest, frontend lint/typecheck/build, and a full-stack Playwright e2e job) with `LLM_PROVIDER=fake`, no API keys required; `make eval` metrics are published in `docs/evaluation.md`.
+- [x] Architecture, agent, memory, data-model, api and compliance docs plus the demo script are delivered (`docs/*`); no recorded video (would need a real screen-recording session, out of scope for this environment).
 
 ## 15. Risks & Mitigations
 

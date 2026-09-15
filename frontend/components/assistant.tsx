@@ -40,6 +40,7 @@ export default function Assistant({
       </p>
       <div className="button-row">
         {[
+          "Weekly management brief",
           "What is overdue and who owns it?",
           "What are the main risks?",
           "Summarize recent decisions",
