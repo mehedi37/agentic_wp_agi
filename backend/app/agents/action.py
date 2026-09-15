@@ -41,7 +41,7 @@ def _graph(session: Session, action: ProposedAction) -> Any:
                 raise ValueError("Unsupported outbound action kind")
             action.result = result
             action.status = "executed"
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001
             # An ambiguous network failure must not cause a duplicate external send.
             action.status = "failed"
             action.result = {"error": type(exc).__name__, "delivered": False,

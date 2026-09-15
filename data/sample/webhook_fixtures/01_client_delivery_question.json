@@ -1,0 +1,27 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "demo-waba",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": { "display_phone_number": "8801700000099", "phone_number_id": "demo-business-number" },
+            "contacts": [{ "profile": { "name": "Farah (Shapla Retail)" }, "wa_id": "8801700000021" }],
+            "messages": [
+              {
+                "from": "8801700000021",
+                "id": "wamid.HBgLZGVtby0wMDEAAA==",
+                "timestamp": "1773532800",
+                "type": "text",
+                "text": { "body": "Hi, can you confirm when the delayed Shapla Retail shipment will arrive? This is the third delay this month." }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

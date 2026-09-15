@@ -18,7 +18,9 @@ def setup_checkpoints() -> None:
 
 
 def session_checkpointer(session: Session) -> PostgresSaver:
-    saver = PostgresSaver(session.connection().connection.driver_connection)
+    raw_connection = session.connection().connection.driver_connection
+    assert raw_connection is not None
+    saver = PostgresSaver(raw_connection)
     # Use ordinary cursors/savepoints on the application's existing transaction.
     saver.supports_pipeline = False
     return saver

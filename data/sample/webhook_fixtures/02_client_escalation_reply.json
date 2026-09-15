@@ -1,0 +1,28 @@
+{
+  "object": "whatsapp_business_account",
+  "entry": [
+    {
+      "id": "demo-waba",
+      "changes": [
+        {
+          "field": "messages",
+          "value": {
+            "messaging_product": "whatsapp",
+            "metadata": { "display_phone_number": "8801700000099", "phone_number_id": "demo-business-number" },
+            "contacts": [{ "profile": { "name": "Farah (Shapla Retail)" }, "wa_id": "8801700000021" }],
+            "messages": [
+              {
+                "from": "8801700000021",
+                "id": "wamid.HBgLZGVtby0wMDIAAA==",
+                "timestamp": "1773533400",
+                "type": "text",
+                "context": { "id": "wamid.HBgLZGVtby0wMDEAAA==" },
+                "text": { "body": "Please escalate this internally, we cannot keep operating like this." }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

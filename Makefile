@@ -1,4 +1,4 @@
-.PHONY: up down logs lint test fmt seed eval migrate env
+.PHONY: up down logs lint test fmt seed eval migrate env simulate-webhook
 
 env:
 	test -f .env || cp .env.example .env
@@ -32,3 +32,6 @@ seed: migrate
 
 eval:
 	cd backend && uv run python -m scripts.run_eval
+
+simulate-webhook:
+	cd backend && uv run python -m scripts.simulate_webhook
