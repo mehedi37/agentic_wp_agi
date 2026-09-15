@@ -16,8 +16,8 @@ from app.llm.factory import get_embedding_provider, get_llm_provider
 from app.services.ingestion import ingest_export
 
 DEMO_USERS = [
-    {"email": "manager@demo.local", "name": "Demo Manager", "role": "manager"},
-    {"email": "analyst@demo.local", "name": "Demo Analyst", "role": "analyst"},
+    {"email": "manager@demo.dev", "name": "Demo Manager", "role": "manager"},
+    {"email": "analyst@demo.dev", "name": "Demo Analyst", "role": "analyst"},
 ]
 DEMO_PASSWORD = "demo1234"
 
@@ -63,7 +63,7 @@ async def seed_demo() -> None:
                 await plan_action(session, escalation, llm)
             session.commit()
             print(f"Processed {name}")
-    print("Seeded demo users: manager@demo.local / analyst@demo.local (password: demo1234)")
+    print("Seeded demo users: manager@demo.dev / analyst@demo.dev (password: demo1234)")
 
 
 if __name__ == "__main__":

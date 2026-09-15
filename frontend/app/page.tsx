@@ -150,7 +150,7 @@ export default function HomePage() {
             <input
               name="email"
               type="email"
-              defaultValue="manager@demo.local"
+              defaultValue="manager@demo.dev"
               required
               autoComplete="username"
             />
@@ -171,7 +171,7 @@ export default function HomePage() {
           )}
           <button disabled={busy}>{busy ? "Signing in…" : "Sign in →"}</button>
           <small>
-            Demo: manager@demo.local or analyst@demo.local · password demo1234
+            Demo: manager@demo.dev or analyst@demo.dev · password demo1234
           </small>
         </form>
       </main>

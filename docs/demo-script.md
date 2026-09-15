@@ -8,13 +8,13 @@ make up                   # postgres, redis, mailpit, backend, worker, frontend
 make seed                 # demo users + ingest data/sample/exports + run the pipeline + monitor + plan actions
 ```
 
-Demo credentials: **manager@demo.local** / **analyst@demo.local**, password `demo1234` for both.
+Demo credentials: **manager@demo.dev** / **analyst@demo.dev**, password `demo1234` for both.
 
 Frontend: http://localhost:3000 · API docs: http://localhost:8000/docs · Mailpit: http://localhost:8025
 
 ## 1. Ingestion is real, not a mock (45s)
 
-Log in as **manager@demo.local**. Open **Ingestion**. Point out the 5 chats already listed (seeded from committed Android `.txt` / iOS `.zip` exports under `data/sample/exports/`) — this is real WhatsApp export parsing, not synthetic rows inserted directly into the database. Optionally re-upload one export to show the "N imported · N duplicates" idempotency message.
+Log in as **manager@demo.dev**. Open **Ingestion**. Point out the 5 chats already listed (seeded from committed Android `.txt` / iOS `.zip` exports under `data/sample/exports/`) — this is real WhatsApp export parsing, not synthetic rows inserted directly into the database. Optionally re-upload one export to show the "N imported · N duplicates" idempotency message.
 
 *(Optional, if you want to show the Cloud API path too: `make simulate-webhook` in a terminal — replays signed fixtures against `POST /api/webhook`, and the resulting chat/messages appear in Chat Explorer within one pipeline cycle.)*
 
@@ -30,7 +30,7 @@ Open **Agent activity**. Filter to `agent=pipeline`. Point at a segment with mor
 
 Open **Escalations**. Show a planted scenario firing correctly, e.g. the recurring-issue detector on Ops & Incidents (raised 3+ times in 7 days) or the unowned-high-risk detector. Open **Approvals**, find a pending outbound action, click to preview the drafted message, then **Approve** as the manager. Switch to Mailpit (or the Agent Activity feed for a WhatsApp `simulated` send) and show the message actually went out — the approval resumed a paused LangGraph run, it didn't just flip a status flag.
 
-Log out, log in as **analyst@demo.local**, and show the Approve button is gone / a direct API call is rejected with 403 — RBAC is enforced, not cosmetic.
+Log out, log in as **analyst@demo.dev**, and show the Approve button is gone / a direct API call is rejected with 403 — RBAC is enforced, not cosmetic.
 
 ## 5. Search across languages (45s)
 

@@ -36,8 +36,8 @@ class Settings(BaseSettings):
     smtp_host: str = "localhost"
     smtp_port: int = 1025
     email_mode: str = "smtp"
-    email_from: str = "dashboard@demo.local"
-    digest_recipient: str = "manager@demo.local"
+    email_from: str = "dashboard@demo.dev"
+    digest_recipient: str = "manager@demo.dev"
 
     whatsapp_mode: str = "simulated"
     whatsapp_verify_token: str = "dev-verify-token"
